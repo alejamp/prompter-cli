@@ -33,7 +33,7 @@ If no promptId is provided, the file name will be used as the promptId. If the p
  prompter --prompt=demo.hbr --publish
  ```
 
- Publish using a promptId:
+ Publish using a different promptId:
 
  ```bash
     prompter --prompt=demo.hbr --id=demo --publish
@@ -41,5 +41,10 @@ If no promptId is provided, the file name will be used as the promptId. If the p
 
 ### Uploading Embeddings
 
-Embeddings can be uploaded by running `prompter --embed=<file>` in your terminal. Embeddings must be a text file, it supports Mark Down and Json.
+Embeddings can be uploaded by running ```prompter --embed=<file> --collection=<collection-name> ``` in your terminal. Embeddings must be a text file, it supports Mark Down and Json.
 
+you can specifiy chunkSize by running ```prompter --embed=<file> --collection=<collection-name> --chunkSize=<chunkSize>``` in your terminal. The default chunkSize is 1000.
+
+### Querying Embeddings
+
+Execute ```prompter``` then select Embeddings from menu.
