@@ -1,0 +1,20 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+
+    // https://bobbyhadz.com/blog/typescript-unknown-file-extension-error#:~:text=The%20ts%2Dnode%20error%20'%5B,module%22%20property%20from%20your%20package.
+    "configurations": [
+        {
+            "name": "Debug index.ts",
+            "type": "node",
+            "request": "launch",
+            "runtimeArgs": ["--loader", "ts-node/esm"],
+            "args": ["${workspaceFolder}/src/index.ts"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+          }       
+    ]
+}

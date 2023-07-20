@@ -1,0 +1,30 @@
+{
+  "name": "prompter-cli",
+  "version": "1.1.2",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "prompter": "dist/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "node --experimental-modules ./dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@inquirer/prompts": "^2.2.0",
+    "@types/figlet": "^1.5.6",
+    "axios": "^1.4.0",
+    "chalk": "^4.1.0",
+    "figlet": "^1.6.0",
+    "lowdb": "^6.0.1",
+    "ts-command-line-args": "^2.5.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.3",
+    "typescript": "^5.1.6"
+  }
+}
