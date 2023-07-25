@@ -241,7 +241,7 @@ export async function uploadEmbedFile(
     const response = await axios.post(url, body, {
         headers: {
             'Content-Type': 'application/json',
-            'x-lola-auth': token
+            'Authorization': `Bearer ${token}`
         }
     });
 
