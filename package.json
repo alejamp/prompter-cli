@@ -1,6 +1,6 @@
 {
   "name": "prompter-cli",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "",
   "exports": "./index.js",
   "node": ">=16",
