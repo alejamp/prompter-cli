@@ -4,6 +4,7 @@ import { Store } from '../store.js';
 import { promptAssistantMenu } from "./assistant.js";
 import { promptChannelsMain } from "./channels.js";
 import { promptEmbeddingsMain } from "./embeddings.js";
+import { promptChatwootAccountMenu } from "./chatwoot.js";
 
 export async function PromptMenu() {
 
@@ -36,6 +37,11 @@ export async function promptMainMenu(token: string) {
             name: 'Channels',
             value: 'channels',            
             description: 'Manage channels: Telegram, Whatsapp, Chatwoot, etc.',
+          },
+          {
+            name: 'Chatwoot Accounts',
+            value: 'chatwoot',
+            description: 'Manage Chatwoot Accounts',
           },
           {
             name: 'Assistants',
@@ -73,6 +79,9 @@ export async function promptMainMenu(token: string) {
             break;
         case 'prompts':
             console.log('prompts');
+            break;
+        case 'chatwoot':
+            promptChatwootAccountMenu(token);
             break;
         case 'embeddings':
           await promptEmbeddingsMain(token);

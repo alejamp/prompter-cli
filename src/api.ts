@@ -247,3 +247,168 @@ export async function uploadEmbedFile(
 
     return response;
 }
+
+
+
+export async function getChatwootAccounts (token: string) {
+
+    // ### Get Accounts
+    // GET {{uri}}/channel/chatwoot/account
+    // Authorization: Bearer {{token}}
+
+    const url = `${PROMPTER_SERVER_URL}/api/channel/chatwoot/account`;
+
+
+    // perform a get to the prompter api using axios
+    const response = await axios.get(url, {headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    return response.data;
+}
+
+export async function getChatwootBotsFromAccount (token: string, accountId: string) {
+    // ### Get All bots
+    // GET {{uri}}/channel/chatwoot/account/4/bot
+    // Authorization: Bearer {{token}}
+
+    const url = `${PROMPTER_SERVER_URL}/api/channel/chatwoot/account/${accountId}/bot`;
+
+    // perform a get to the prompter api using axios
+    const response = await axios.get(url, {headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+        }
+    });
+
+    return response.data;
+}
+
+export async function getAllChatwootBotsFromTenant (token: string) {
+    const accs = await getChatwootAccounts(token);
+    const bots: any[] = [];
+
+    for (const acc of accs) {
+        const regBots: any[] = await getChatwootBotsFromAccount(token, acc.accountId);
+        bots.push(...regBots);
+    }
+
+    return bots;
+}
+
+
+export async function registerChatwootAccount (token: string, accountId: string, chatwootUrl: string, apiToken: string) {
+
+
+    // ### Register Account
+    // POST {{uri}}/channel/chatwoot/account/register
+    // Authorization: Bearer {{token}}
+    // Content-Type: application/json
+
+    // {
+    //     "chatwootUrl": "{{chatwootUrl}}", 
+    //     "userApiKey": "{{userApiKey}}", 
+    //     "accountId": 4
+    // }
+
+    const url = `${PROMPTER_SERVER_URL}/api/channel/chatwoot/account/register`;
+
+    const body = {
+        chatwootUrl: chatwootUrl,
+        userApiKey: apiToken,
+        accountId: accountId
+    }
+
+    // perform a get to the prompter api using axios
+    const response = await axios.post(url, body, {headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    return response.data;
+}
+
+export async function unregisterChatwootAccount (token: string, accountRegId: string) {
+
+
+    // ### Un-Register Account
+    // POST {{uri}}/channel/chatwoot/account/unregister
+    // Authorization: Bearer {{token}}
+    // Content-Type: application/json
+    
+    // {
+    //     "accountRegId": "{{accountRegId}}"
+    // }
+
+    const url = `${PROMPTER_SERVER_URL}/api/channel/chatwoot/account/unregister`;
+
+    const body = {
+        accountRegId: accountRegId
+    }
+
+    // perform a get to the prompter api using axios
+    const response = await axios.post(url, body, {headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    return response.data;
+}
+
+
+export async function registerChatwootBot (token: string, accountRegId: string, botName: string, botDesc: string, assistantId: string) {
+    // ### Register Bot
+    // POST {{uri}}/channel/chatwoot/account/bot
+    // Authorization: Bearer {{token}}
+    // Content-Type: application/json
+
+    // {
+    //     "accountRegId": "{{accountRegId}}",
+    //     "botName": "TestBotDemo",
+    //     "botDesc": "Test Demo Assistant",
+    //     "assistantId": "{{assitantId}}"
+    // }
+
+    const url = `${PROMPTER_SERVER_URL}/api/channel/chatwoot/account/bot`;
+
+    const body = {
+        accountRegId: accountRegId,
+        botName: botName,
+        botDesc: botDesc,
+        assistantId: assistantId
+    }
+
+    // perform a get to the prompter api using axios
+    const response = await axios.post(url, body, {headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    return response.data;            
+
+
+}
+
+export async function unregisterChatwootBot(token: string, accountId: number, botId: number) {
+    // ### Unregister Bot
+    // DELETE {{uri}}/channel/chatwoot/account/4/bot/2
+    // Authorization: Bearer {{token}}
+    // Content-Type: application/json
+
+    const url = `${PROMPTER_SERVER_URL}/api/channel/chatwoot/account/${accountId}/bot/${botId}`;
+
+    // perform a get to the prompter api using axios
+    const response = await axios.delete(url, {headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    return response.data;            
+}
+

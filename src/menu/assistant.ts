@@ -141,6 +141,17 @@ export async function promptDeleteAssistant(token: string, assistant: any) {
 }
 
 
+export async function promptAssistantPicker (token: string) : Promise<any> {
+    const l = await getAssistants(token);
+
+    if (!l || l.length === 0) {
+        console.log(chalk.red(`No assistants found.`));
+        return undefined;
+    }
+
+    const assistant = await assistantPicker(l);
+    return assistant;
+}
 
 export async function assistantPicker(list: any[]) : Promise<any> {
     const orderedList = list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());

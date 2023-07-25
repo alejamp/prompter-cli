@@ -1,40 +1,68 @@
-import { Separator, select, confirm, input } from "@inquirer/prompts";
-import { doLogin, doLogout } from "./login.js";
-import { Store } from '../store.js';
-import { createAssistant, deleteAssistant, deleteTelegramChannel, getAssistants, getTelegramChannels, registerTelegramChannel, setAssistantPrompt } from "../api.js";
+import { select, confirm, input } from "@inquirer/prompts";
+import { deleteTelegramChannel, getAllChatwootBotsFromTenant, getAssistants, getChatwootAccounts, getTelegramChannels, registerChatwootBot, registerTelegramChannel, setAssistantPrompt, unregisterChatwootBot } from "../api.js";
 import chalk from 'chalk';
-import { assistantPicker } from "./assistant.js";
+import { assistantPicker, promptAssistantPicker } from "./assistant.js";
+import { promptChatwootAccountsPicker } from "./chatwoot.js";
 
 
 
 export async function promptChannelsMain(token: string, assistant?: any) {
+
+    const telegramChannels = await getTelegramChannels(token) ?? [];
+    const chatwootBots = await getAllChatwootBotsFromTenant(token) ?? [];
+
+    // chatwoot bots
+    // {
+    //     "id": 3,
+    //     "name": "TestBot1",
+    //     "description": "Test1",
+    //     "outgoing_url": "https://6c0b-181-168-225-209.ngrok-free.app/api/chatwoot/messages/yUPGw1E97ASZZIt7idUnQw%3D%3D-cYzX27HVCfxuqEMSjkLF66Av140WemMB2otVnc7okle%2FCWjD7FoFLwVv4NrHcdGA",
+    //     "bot_type": "webhook",
+    //     "bot_config": {},
+    //     "account_id": 4,
+    //     "access_token": "Pxi3GYQTkAvPeBbB4RMkL84F"
+    //   },    
+
+    const choices = [
+        ... telegramChannels.map((c: any) => {
+            return {
+                name: `Telegram: ${c.register.botName} for assistant: ${c.assistant.name}`,
+                value: c,
+                description: `Select ${c.register.botName}`,
+            }
+        }),
+        ... chatwootBots.map((c: any) => {
+            return {
+                name: `Chatwoot AgentBot: ${c.name} at account: ${c.account_id}`,
+                value: c,
+                description: `Select ${c.name}`,
+            }
+        }),
+        ... [
+            {
+                name: 'Register New',
+                value: 'new',
+                description: 'Create a new assistant',
+            }
+        ]
+    ];
+
+
     const answer = await select({
         message: 'What do you want to do with channels?',
-        choices: [
-          {
-            name: 'List',
-            value: 'list',            
-            description: 'List all assistants',
-          },
-          {
-            name: 'Register New',
-            value: 'new',
-            description: 'Create a new assistant',
-          },
-        ],
+        choices: choices
       });    
     
       switch (answer) {
-        case 'list':
-            const channel = await promptListChannels(token);
-            await promptChannelAdminMenu(token, channel);
-            break;
         case 'new':
             const type = await promptChannelType();
             switch (type) {
                 case 'telegram':
                     await promptNewTelegramChannel(token);
                     break;
+                case 'chatwoot':
+                    await promptNewChatwootBot(token);
+                    break;                    
                 case 'whatsapp':
                     console.log(chalk.red(`Whatsapp channel not implemented yet.`));
                     break;
@@ -43,8 +71,36 @@ export async function promptChannelsMain(token: string, assistant?: any) {
             }
             break;
         default:
+            await promptChannelAdminMenu(token, answer);
             break;
       }    
+}
+
+
+export async function promptNewChatwootBot(token: string) {
+
+    // New bot data:
+    // {
+    //     "accountRegId": "{{accountRegId}}",
+    //     "botName": "TestBotDemo",
+    //     "botDesc": "Test Demo Assistant",
+    //     "assistantId": "{{assitantId}}"
+    // }
+
+    const botName = await input({ message: 'Enter bot name:' });
+    const botDesc = await input({ message: 'Enter bot description:' });
+    const chatwootAccount: any = await promptChatwootAccountsPicker(token);
+    const accountRegId = chatwootAccount.id;
+    const assistant = await promptAssistantPicker(token);
+
+    if (!assistant) {
+        console.log(chalk.red(`No assistant selected.`));
+        console.log(chalk.red(`Please create an assistant first.`));
+        return;
+    }
+    
+    await registerChatwootBot(token, accountRegId, botName, botDesc, assistant.assistantId);
+    console.log(chalk.green(`Chatwoot bot registered successfully!`));
 }
 
 export async function promptNewTelegramChannel(token: string) {
@@ -71,6 +127,11 @@ export async function promptChannelType() {
                 name: 'Telegram',
                 value: 'telegram',
                 description: 'Telegram channel',
+            },
+            {
+                name: 'Chatwoot',
+                value: 'chatwoot',
+                description: 'Cahtwoot Account',
             },
             {
                 name: 'Whatsapp',
@@ -102,46 +163,28 @@ export async function promptChannelAdminMenu(token: string, channel: any) {
 
     switch (answer) {
         case 'info':
-            console.log(chalk.green(`Channel info (${channel.source}) :`));
             console.log(chalk.gray(`--------------------------------------------------`));
-            console.log(chalk.gray(`  - Bot name: ${channel.register.botName}`));
-            console.log(chalk.gray(`  - Assistant ID: ${channel.assistant.assistantId}`));
-            console.log(chalk.gray(`  - Assistant name: ${channel.assistant.name}`));
-            console.log(chalk.gray(`  - Assistant promptId: ${channel.assistant.promptId}`));
-            console.log(chalk.gray(`  - Bot token: ${channel.register.botToken}`));
+            console.log(chalk.green(`Channel info:`));
+            console.log(chalk.gray(`--------------------------------------------------`));
+            console.log(chalk.gray(JSON.stringify(channel, null, 2)));
+            console.log(chalk.gray(`--------------------------------------------------`));
 
             break;
         case 'delete':
             const confirmDelete = await confirm({ message: `Are you sure you want to delete this channel?` });
             if (confirmDelete) {
-                await deleteTelegramChannel(token, channel.register.botName);
-                console.log(chalk.green(`Channel deleted successfully!`));
+                if (channel.register) {
+                    await deleteTelegramChannel(token, channel.register.botName);
+                    console.log(chalk.green(`Telegram Channel deleted successfully!`));
+                }
+                if (channel.account_id) {
+                    await unregisterChatwootBot(token, channel.account_id, channel.id);
+                    console.log(chalk.green(`Chatwoot Bot deleted successfully!`));
+                }
             }
             break;
         default:
             break;
     }
 
-}
-
-export async function promptListChannels(token: string) {
-    /// Load registered channels from API
-    const channels = await getTelegramChannels(token);
-    if (!channels || channels.length === 0) {
-        console.log(chalk.red(`No channels found.`));
-        await promptChannelsMain(token);
-        return;
-    }
-
-    const answer = await select({
-        message: 'Select a channel to manage:',
-        choices: channels.map((c: any) => {
-            return {
-                name: `${c.source} - ${c.register.botName}`,
-                value: c
-            }
-        })
-    });
-    
-    return answer;    
 }
