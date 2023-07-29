@@ -39,11 +39,22 @@ If no promptId is provided, the file name will be used as the promptId. If the p
     prompter --prompt=demo.hbr --id=demo --publish
 ```
 
-### Uploading Embeddings
+### Uploading Plain Text Embeddings
 
+Create a text file with extension .txt then follow the instructions below.
 Embeddings can be uploaded by running ```prompter --embed=<file> --collection=<collection-name> ``` in your terminal. Embeddings must be a text file, it supports Mark Down and Json.
 
 you can specifiy chunkSize by running ```prompter --embed=<file> --collection=<collection-name> --chunkSize=<chunkSize>``` in your terminal. The default chunkSize is 1000.
+
+### Uploading Markdown Embeddings
+
+Create a text file with extension .md then follow the instructions below.
+Embeddings can be uploaded by running ```prompter --embed=<file> --collection=<collection-name>``` in your terminal. Embeddings must be a text file with extension .md. Prompter will detect the file extension and upload the embeddings as markdown.
+
+Additional parameters can be specified by running ```prompter --embed=<file> --splitTables=true``` in your terminal.
+In Markdown, tables are represented as text. Prompter will detect tables and split them into separate chunks keeping a copy of the header in each chunk. This is useful for creating a table of contents.
+
+In markdown, the chunk split criteria is praragraphs, each paragraph will be a separate chunk, keeping a breadcrumb of the parent headlines on each chunk.
 
 ### Querying Embeddings
 
