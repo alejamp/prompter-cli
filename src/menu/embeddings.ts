@@ -39,24 +39,30 @@ export async function promptEmbeddingsMain(token: string) {
 
 export async function promptEmbeddingsQuery(token: string) {
     const collectionName = await input({ message: 'Enter collection name:' });
-    const query = await input({ message: 'Enter query:' });
     const knn = await input({ message: 'Enter knn (default: 3):', default: '3' });
-
-    console.log(chalk.green(`Query "${query}" on collection "${collectionName}" with knn ${knn}...`));
-    const res = await semanticStoreQuery(token, collectionName, query, parseInt(knn));
-    
-    if (!res || res.length === 0) {
-        console.log(chalk.red(`No results found.`));
-        await promptEmbeddingsQuery(token);
-        return;
-    }
-    
-    for (const r of res) {
-        console.log(chalk.green(`------------------------------------------------------------------`));
-        console.log(chalk.bold(`Score: ${r.distance}`));
-        console.log(chalk.gray(`Metada: ${JSON.stringify(r.metadata)}`));
-        console.log(chalk.gray(`Text: ${r.text}`));
-
+    let continueQuery = true;
+    while (continueQuery) {
+      const query = await input({ message: 'Enter query:' });
+      await queryEmbeddings(token, collectionName, query, parseInt(knn));
+      continueQuery = await confirm({ message: 'Do you want to continue querying?', default: true });
     }
 }
-        
+
+export async function queryEmbeddings(token: string, collectionName: string, query: string, knn: number) {
+  console.log(chalk.green(`Query "${query}" on collection "${collectionName}" with knn ${knn}...`));
+  const res = await semanticStoreQuery(token, collectionName, query, knn);
+  
+  if (!res || res.length === 0) {
+      console.log(chalk.red(`No results found.`));
+      await promptEmbeddingsQuery(token);
+      return;
+  }
+  
+  for (const r of res) {
+      console.log(chalk.green(`------------------------------------------------------------------`));
+      console.log(chalk.bold(`Score: ${r.distance}`));
+      console.log(chalk.gray(`Metada: ${JSON.stringify(r.metadata)}`));
+      console.log(chalk.gray(`Text: ${r.text}`));
+
+  }
+}        

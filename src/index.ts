@@ -34,19 +34,21 @@ const args = processArgs();
 // Execute based on arguments
 Execute(args).then(() => {
     // console.log(chalk.green(`Done.`))
+    PromptMenu().then(() => {
+        // console.log(chalk.green(`Done.`))
+    }
+    ).catch((err: any) => {
+        console.error(chalk.red(`Error: ${err}`));
+        process.exit(1);
+    });
+    
+
 }).catch((err) => {
     console.error(chalk.red(`Error: ${err}`));
     process.exit(1);
 });
 
 
-PromptMenu().then(() => {
-    // console.log(chalk.green(`Done.`))
-}
-).catch((err: any) => {
-    console.error(chalk.red(`Error: ${err}`));
-    process.exit(1);
-});
 
 
 

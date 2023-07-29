@@ -3,7 +3,7 @@ import { IPrompterArguments } from "./model/arguments.js";
 import { join } from 'path';
 import { existsSync, readFileSync } from 'fs';
 import { Store } from './store.js';
-import { uploadEmbedFile } from './api.js';
+import { uploadEmbedFile, uploadEmbedFileMarkdown } from './api.js';
 import { Spinner } from 'cli-spinner';
 
 export async function processEmbed(args: IPrompterArguments) {
@@ -22,16 +22,14 @@ export async function processEmbed(args: IPrompterArguments) {
     }
 
     let embedNameWithoutExtension = args.embed.split('.').slice(0, -1).join('.');
+    let extension = args.embed.split('.').pop();
     let collection = args.collection ?? embedNameWithoutExtension;
+    let splitTables = args.splitTables ?? false;
 
-    console.log(chalk.gray(`DocumentId: ${args.embed}`));
-    console.log(chalk.gray(`Collection: ${collection}`));
-    console.log(chalk.gray(`Chunk size: ${args.chunkSize ?? 1000}`));
+    console.log(chalk.bold(`DocumentId: ${args.embed}`));
+    console.log(chalk.bold(`Collection: ${collection}`));
+    // console.log(chalk.gray(`Chunk size: ${args.chunkSize ?? 1000}`));
 
-    const spinner = new Spinner("Processing... %s");
-    spinner.setSpinnerString("|/-\\\\");
-    spinner.start();
-    
 
     // read file
     const fileContent = readFileSync(filePath, 'utf-8');
@@ -44,12 +42,55 @@ export async function processEmbed(args: IPrompterArguments) {
         console.error(chalk.red(`No token found. Please authenticate first. Execute: prompter-cli auth`));
         process.exit(1);
     }
+
+
+    const spinner = new Spinner("Processing... %s");
+    spinner.setSpinnerString("|/-\\\\");
+    spinner.start();
+        
     
     // upload content
-    const res = await uploadEmbedFile(args.embed, collection, fileContent, token, args.chunkSize);    
-    //  print all response properties
-    // console.log(chalk.gray(`Response: ${JSON.stringify(res.data)}`));
-    spinner.stop(true);
-    const chunks = res?.data?.ids ?? 0;
-    console.log(chalk.green(`File ${args.embed} uploaded in ${chunks.length} chunks.`));
+    if (extension?.toLowerCase() === 'txt') {
+        // console.log(chalk.gray(`Uploading file ${args.embed} as plain text...`));
+        const res = await uploadEmbedFile(args.embed, collection, fileContent, token, args.chunkSize);
+        printEmbedReport(res);
+        spinner.stop(true);
+        console.log(chalk.green(`File uploaded as plain text.`));
+        console.log(chalk.gray(`Chunk size: ${args.chunkSize ?? 1000}`));
+        process.exit(0);
+    } 
+
+    if (extension?.toLowerCase() === 'md') {
+        // console.log(chalk.gray(`Uploading file ${args.embed} as markdown...`));
+        const res = await uploadEmbedFileMarkdown(args.embed, collection, fileContent, splitTables, token);
+        printEmbedReport(res);
+        spinner.stop(true);
+        console.log(chalk.green(`File uploaded as markdown.`));
+        process.exit(0);
+    }
+
+    console.log(chalk.red(`File extension not supported.`));
+    // exit process
+    process.exit(1);
+}
+
+export function printEmbedReport(res: any) {
+    for (let i = 0; i < res.texts.length; i++) {
+        const text = res.texts[i];
+        const tokens = res.tokens[i];
+        const id = res.ids[i];
+
+        console.log(chalk.green(`------------------------------------------------------------------`));
+        console.log(chalk.bold(`ID: ${id}`));
+        console.log(chalk.gray(`Text: ${text}`));
+        console.log(chalk.bold(`Tokens: ${tokens}`));
+    }
+    console.log(chalk.green(`------------------------------------------------------------------`));
+    console.log(chalk.green(`File uploaded in ${res.ids.length} chunks.`));     
+    console.log(chalk.bold(`Avg Tokens: ${res.avgTokens}`));
+    console.log(chalk.bold(`Max. Tokens: ${res.maxTokens}`));
+    console.log(chalk.bold(`Min. Tokens: ${res.minTokens}`)); 
+    // total tokens:
+    console.log(chalk.bold(`Total Tokens: ${res.tokens.reduce((a: number, b: number) => a + b, 0)}`));
+    console.log(chalk.green(`------------------------------------------------------------------`));
 }

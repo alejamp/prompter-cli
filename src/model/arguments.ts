@@ -11,6 +11,7 @@ export interface IPrompterArguments {
     embed?: string;
     chunkSize?: number;
     collection?: string;
+    splitTables?: boolean;
  }
 
 
@@ -32,6 +33,11 @@ export interface IPrompterArguments {
                 description: 'Embed a text data file into a semantic store. It performs an upsert operation. Example: --embed my-data.txt',
                 optional: true
             },
+            splitTables: {
+                type: Boolean,
+                description: 'Split tables into separate chunks. Example: --splitTables true',
+                optional: true
+            },            
             auth: {
                 type: Boolean,
                 description: 'Auth using your token.',

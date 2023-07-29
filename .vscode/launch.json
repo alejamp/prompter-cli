@@ -11,10 +11,16 @@
             "type": "node",
             "request": "launch",
             "runtimeArgs": ["--loader", "ts-node/esm"],
-            "args": ["${workspaceFolder}/src/index.ts"],
+            "args": [
+                "${workspaceFolder}/src/index.ts",
+                // "--embed",
+                // "sample1.md",
+                // "--splitTables",
+                // "true"
+            ],
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
-          }       
+          }
     ]
 }

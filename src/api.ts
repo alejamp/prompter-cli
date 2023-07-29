@@ -245,7 +245,40 @@ export async function uploadEmbedFile(
         }
     });
 
-    return response;
+    return response.data;
+}
+
+
+export async function uploadEmbedFileMarkdown(
+    documentId: string, 
+    collection: string, 
+    fileContent: string, 
+    splitTables: boolean,
+    token: string) : Promise<any> {
+    
+
+    const url = PROMPTER_SERVER_URL + '/api/semantic-store/save/markdown';
+
+    const body = {
+        documentId: documentId,
+        text: fileContent,
+        collectionName: collection,
+        options: {
+            splitTables: splitTables,
+            cleanPreviousData: true,
+            metadata: undefined
+        }
+    };
+
+    // perform a post to the prompter api using axios
+    const response = await axios.post(url, body, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    return response.data;
 }
 
 
