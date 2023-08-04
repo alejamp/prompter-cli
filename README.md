@@ -1,3 +1,9 @@
+
+<p align="center">
+  <img src="https://firebasestorage.googleapis.com/v0/b/numichat.appspot.com/o/Perf_Lola%2BH.way%20banner.png?alt=media&token=8a0dac42-1f76-4754-ac9c-40a93ba02125" alt="Logo">
+</p>
+
+
 # Prompter CLI
 
 Prompter CLI is a command line tool for managing prompts, bots, and embeddings.
