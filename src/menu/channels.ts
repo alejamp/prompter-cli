@@ -1,5 +1,5 @@
 import { select, confirm, input } from "@inquirer/prompts";
-import { deleteTelegramChannel, getAllChatwootBotsFromTenant, getAssistants, getChatwootAccounts, getTelegramChannels, registerChatwootBot, registerTelegramChannel, setAssistantPrompt, unregisterChatwootBot } from "../api.js";
+import { assignChatwootBotToAssistant, deleteTelegramChannel, getAllChatwootBotsFromTenant, getAssistants, getChatwootAccounts, getTelegramChannels, registerChatwootBot, registerTelegramChannel, setAssistantPrompt, unregisterChatwootBot } from "../api.js";
 import chalk from 'chalk';
 import { assistantPicker, promptAssistantPicker } from "./assistant.js";
 import { promptChatwootAccountsPicker } from "./chatwoot.js";
@@ -154,6 +154,11 @@ export async function promptChannelAdminMenu(token: string, channel: any) {
             description: 'Show channel info',
           },
           {
+            name: 'Assign to assistant',
+            value: 'assign',            
+            description: 'Assign this channel to an assistant',
+          },
+          {
             name: 'Delete',
             value: 'delete',
             description: 'Delete this channel',
@@ -178,9 +183,30 @@ export async function promptChannelAdminMenu(token: string, channel: any) {
                     console.log(chalk.green(`Telegram Channel deleted successfully!`));
                 }
                 if (channel.account_id) {
-                    await unregisterChatwootBot(token, channel.account_id, channel.id);
-                    console.log(chalk.green(`Chatwoot Bot deleted successfully!`));
+                    try {
+                        await unregisterChatwootBot(token, channel.account_id, channel.id);
+                        console.log(chalk.green(`Chatwoot Bot deleted successfully!`));
+                    } catch (error) {
+                        console.log(chalk.red(`Error deleting Chatwoot Bot. Maybe it is in use by an inbox?`));
+                        console.log(chalk.red(`If the problem persists, please create a new bot instead.`));
+                    }                
                 }
+            }
+            break;
+
+        case 'assign':
+            if (channel.account_id) {
+                const assistant = await promptAssistantPicker(token);
+                if (!assistant) {
+                    console.log(chalk.red(`No assistant selected.`));
+                    console.log(chalk.red(`Please create an assistant first.`));
+                    return;
+                }
+                await assignChatwootBotToAssistant(token, channel.account_id, channel.id, assistant.assistantId);
+                console.log(chalk.green(`Chatwoot Bot assigned successfully!`));
+            } else {
+                console.log(chalk.red(`Assisgn to a new assistant is only available for Chatwoot bots.`));
+                console.log(chalk.red(`For Telegram channels, delete and create again the channel instead.`));
             }
             break;
         default:

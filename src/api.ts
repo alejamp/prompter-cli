@@ -446,3 +446,33 @@ export async function unregisterChatwootBot(token: string, accountId: number, bo
     return response.data;            
 }
 
+export async function assignChatwootBotToAssistant(token: string, accountId: number, botId: number, assistantId: string) {
+
+    // PUT {{uri}}/channel/chatwoot/account/bot/assistant
+    // Authorization: Bearer {{token}}
+    // Content-Type: application/json
+
+    // {
+
+    //     "botId": 4,
+    //     "accountId": 4,
+    //     "assistantId": "123"
+    // }
+
+    const url = `${PROMPTER_SERVER_URL}/api/channel/chatwoot/account/bot/assistant`;
+
+    const data = {
+        botId: botId,
+        accountId: accountId,
+        assistantId: assistantId
+    };
+
+    // perform a get to the prompter api using axios
+    const response = await axios.put(url, data,{headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+    return response.data;            
+}
