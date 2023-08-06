@@ -185,7 +185,7 @@ export async function login(username: string, password: string) : Promise<string
 }
 
 
-export async function publishPrompt(promptId: string, promptName: string, promptFileContent: string, state?: any, desc?: string) : Promise<void> {
+export async function publishPrompt(token: string, promptId: string, promptName: string, promptFileContent: string, state?: any, desc?: string) : Promise<void> {
     console.log(chalk.green(`Publishing prompt ${promptId}...`));
 
     const url = PROMPTER_SERVER_URL + '/api/prompt';
@@ -205,7 +205,8 @@ export async function publishPrompt(promptId: string, promptName: string, prompt
     // perform a post to the prompter api using axios
     const response = await axios.post(url, body, {
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
         }
     });
 

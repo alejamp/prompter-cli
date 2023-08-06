@@ -13,6 +13,11 @@
             "runtimeArgs": ["--loader", "ts-node/esm"],
             "args": [
                 "${workspaceFolder}/src/index.ts",
+                
+                // "--prompt",
+                // "dev/dev.hbr",
+                // "--publish",
+
                 // "--embed",
                 // "sample1.md",
                 // "--splitTables",
