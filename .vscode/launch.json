@@ -22,6 +22,8 @@
                 // "sample1.md",
                 // "--splitTables",
                 // "true"
+
+                "--init"
             ],
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",

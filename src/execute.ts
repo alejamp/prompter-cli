@@ -8,6 +8,7 @@ import { IPrompterArguments, processArgs } from './model/arguments.js';
 import { Store } from './store.js';
 import { processEmbed } from './embeddings.js';
 import { processPrompt } from './prompt.js';
+import { doInit } from './menu/init.js';
 
 
 export async function Execute(args: IPrompterArguments) : Promise<void> {
@@ -61,4 +62,12 @@ export async function Execute(args: IPrompterArguments) : Promise<void> {
         // TODO: 
         await processPrompt(args);
     }    
+
+
+    /// Init Starter kit
+    // ------------------------------------------------------------------------------
+    if (args.init) {
+        console.log(chalk.gray(`Initializing starter kit...`));
+        await doInit();
+    }
 }

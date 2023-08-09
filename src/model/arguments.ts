@@ -12,6 +12,7 @@ export interface IPrompterArguments {
     chunkSize?: number;
     collection?: string;
     splitTables?: boolean;
+    init?: boolean;
  }
 
 
@@ -72,6 +73,11 @@ export interface IPrompterArguments {
                 alias: 'D',
                 description: 'Prompt description.',
                 // defaultValue: 'Uploaded using prompter-cli',
+                optional: true
+            },
+            init: {
+                type: Boolean,
+                description: 'Initialize a Lola Assistant Project',
                 optional: true
             },
             version: {

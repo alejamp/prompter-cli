@@ -16,11 +16,9 @@ export async function doLogin() {
 
         // save token
         const store = new Store();
-        store.setToken(token).then(() => {
-            console.log(chalk.green(`Login successful!!! Welcome ${username}`));
-        }).catch((err) => {
-            console.error(chalk.red(`Error saving token: ${err}`));
-        });
+        await store.setToken(token);
+        console.log(chalk.green(`Login successful!!! Welcome ${username}`));
+        return token;
     }
     catch (err: any) {
         // console.error(err);
