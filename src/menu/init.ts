@@ -93,7 +93,7 @@ async function downloadGithubRepo(url: string, workingDir: string): Promise<void
     const extractDir = workingDir;//path.join(process.cwd(), repo);
 
     // extractDir exists? 
-    if (readdirSync(process.cwd()).includes(repo)) {
+    if (readdirSync(process.cwd()).includes(extractDir)) {
         console.log(chalk.red(`WARNING -> ${extractDir} already exists.`));
 
         // check if current folder is empty
