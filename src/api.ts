@@ -79,14 +79,15 @@ export async function getTelegramChannels (token: string) {
 }
 
 
-export async function createAssistant(token: string, name: string, agent: string, promptId?: string) {
+export async function createAssistant(token: string, name: string, agent: string, langs: string,  promptId?: string) {
     console.log(chalk.green(`Creating assistant named: ${name}...`));
     const url = PROMPTER_SERVER_URL + `/api/tenant/assistant`;
 
     const body = {
         name: name,
         promptId: promptId,
-        agent: agent
+        agent: agent,
+        language: langs
     };
 
     // console.log(chalk.gray(`POST ${url}`));

@@ -45,10 +45,11 @@ export async function promptAssistantMenu(token: string) {
 
 export async function promptNewAssistant(token: string) {
     const name = await input({ message: 'Enter assistant name:' });
+    const langs = await input({ message: 'Language (default: en-US):', default: 'en-US' });
     const agent = await input({ message: 'Enter Agent (default: lola):', default: 'lola' });
     const promptId = await input({ message: 'Enter promptId (optional):' });
 
-    const assistant = await createAssistant(token, name, agent, promptId);
+    const assistant = await createAssistant(token, name, agent, langs, promptId);
     console.log(chalk.green(`Assistant "${assistant.name}" created successfully!`));
     await selectedAssistantMenu(token, assistant);
 }
@@ -89,6 +90,7 @@ export async function selectedAssistantMenu(token: string, assistant: any) {
             console.log(chalk.gray(`Agent: ${assistant.agent}`));
             console.log(chalk.gray(`Prompt ID: ${assistant.promptId}`));
             console.log(chalk.gray(`Created at: ${assistant.createdAt}`));
+            console.log(chalk.gray(`Language: ${assistant.language}`));
             console.log(chalk.gray(`\nASSISTANT KEY`));
             console.log(chalk.gray(`--------------------------------------------`));
             console.log(chalk.italic(`${assistant.key}`));
