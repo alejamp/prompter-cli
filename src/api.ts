@@ -326,8 +326,12 @@ export async function getAllChatwootBotsFromTenant (token: string) {
     const bots: any[] = [];
 
     for (const acc of accs) {
-        const regBots: any[] = await getChatwootBotsFromAccount(token, acc.accountId);
-        bots.push(...regBots);
+        try{
+            const regBots: any[] = await getChatwootBotsFromAccount(token, acc.accountId);
+            bots.push(...regBots);
+        } catch (e) {
+            // console.log(e);
+        }
     }
 
     return bots;
